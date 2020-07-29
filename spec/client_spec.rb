@@ -9,8 +9,7 @@ describe Amorail::Client do
 
   context "default client" do
     it "should create client", :aggregate_failures do
-      expect(subject.usermail).to eq "amorail@test.com"
-      expect(subject.api_key).to eq "75742b166417fe32ae132282ce178cf6"
+      expect(subject.access_token).to eq "75742b166417fe32ae132282ce178cf6"
       expect(subject.api_endpoint).to eq "https://test.amocrm.ru"
     end
 
@@ -31,17 +30,15 @@ describe Amorail::Client do
     let(:new_client) do
       described_class.new(
         api_endpoint: "https://custom.amo.com",
-        usermail: "custom@amo.com",
-        api_key: "123"
+        access_token: "123"
       )
     end
 
     it "use custom client as instance", :aggregate_failures do
       expect(Amorail.client.usermail).to eq "amorail@test.com"
       Amorail.with_client(new_client) do
-        expect(Amorail.client.usermail).to eq "custom@amo.com"
         expect(Amorail.client.api_endpoint).to eq "https://custom.amo.com"
-        expect(Amorail.client.api_key).to eq "123"
+        expect(Amorail.client.access_token).to eq "123"
       end
 
       expect(Amorail.client.usermail).to eq "amorail@test.com"
