@@ -25,7 +25,7 @@ describe Amorail::Client do
   end
 
   describe "#with_client" do
-    before { mock_custom_api("https://custom.amo.com", "custom@amo.com", "123") }
+    before { mock_custom_api("https://custom.amo.com", "123") }
 
     let(:new_client) do
       described_class.new(
@@ -35,28 +35,24 @@ describe Amorail::Client do
     end
 
     it "use custom client as instance", :aggregate_failures do
-      expect(Amorail.client.usermail).to eq "amorail@test.com"
       Amorail.with_client(new_client) do
         expect(Amorail.client.api_endpoint).to eq "https://custom.amo.com"
         expect(Amorail.client.access_token).to eq "123"
       end
 
-      expect(Amorail.client.usermail).to eq "amorail@test.com"
     end
 
     it "use custom client as options", :aggregate_failures do
-      expect(Amorail.client.usermail).to eq "amorail@test.com"
+      expect(Amorail.client.access_token).to eq "75742b166417fe32ae132282ce178cf6"
       Amorail.with_client(
         api_endpoint: "https://custom.amo.com",
-        usermail: "custom@amo.com",
-        api_key: "123"
+        access_token: "123"
       ) do
-        expect(Amorail.client.usermail).to eq "custom@amo.com"
         expect(Amorail.client.api_endpoint).to eq "https://custom.amo.com"
-        expect(Amorail.client.api_key).to eq "123"
+        expect(Amorail.client.access_token).to eq "123"
       end
 
-      expect(Amorail.client.usermail).to eq "amorail@test.com"
+      expect(Amorail.client.access_token).to eq "75742b166417fe32ae132282ce178cf6"
     end
 
     it "loads custom properties", :aggregate_failures do
@@ -80,10 +76,10 @@ describe Amorail::Client do
       # only after the second thread enters block
       threads << Thread.new do
         q1.pop
-        Amorail.with_client(usermail: 'test1@amo.com') do
+        Amorail.with_client(access_token: 'test1@amo.com') do
           q2 << 1
           q1.pop
-          results << Amorail.client.usermail
+          results << Amorail.client.access_token
           q2 << 1
         end
         q3 << 1
@@ -93,10 +89,10 @@ describe Amorail::Client do
       # after the first block
       threads << Thread.new do
         q2.pop
-        Amorail.with_client(usermail: 'test2@amo.com') do
+        Amorail.with_client(access_token: 'test2@amo.com') do
           q1 << 1
           q2.pop
-          results << Amorail.client.usermail
+          results << Amorail.client.access_token
         end
         q3 << 1
       end
@@ -104,10 +100,10 @@ describe Amorail::Client do
       # This thread enters block third and commits
       # after all other threads left blocks
       threads << Thread.new do
-        Amorail.with_client(usermail: 'test3@amo.com') do
+        Amorail.with_client(access_token: 'test3@amo.com') do
           q3.pop
           q3.pop
-          results << Amorail.client.usermail
+          results << Amorail.client.access_token
         end
       end
 

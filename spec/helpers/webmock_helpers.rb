@@ -22,9 +22,6 @@ module AmoWebMock
   def authorize_stub(endpoint, access_token)
     cookie = 'PHPSESSID=58vorte6dd4t7h6mtuig9l0p50; path=/; domain=amocrm.ru'
     stub_request(:post, "#{endpoint}/private/api/auth.php?type=json")
-      .with(
-        headers: "{\"Authorization\":\"Bearer #{access_token}\"}"
-      )
       .to_return(
         status: 200,
         body: "",
